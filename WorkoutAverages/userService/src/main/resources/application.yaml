@@ -1,0 +1,28 @@
+server:
+  port: 8083
+spring:
+  application:
+    name: ${SPRING.APP.NAME:userservice}
+  datasource:
+    url: jdbc:mysql://user-db:3307/USER_DB 
+    username: user
+    password: user
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+  jpa:
+    properties:
+      hibernate:
+        # format_sql: ${HIBERNATE_FORMAT_SQL:true} # Formats SQL for better readability in logs
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+logging:
+  level:
+    org:
+      springframework:
+        security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
+  # pattern:
+  #   console: ${LOG_PATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS})%blue(%-5level)%red([%thread])%yellow(%logger{15}) - %msg%n}

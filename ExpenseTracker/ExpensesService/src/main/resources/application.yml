@@ -1,0 +1,32 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: expensetracker
+  datasource:
+    url: jdbc:mysql://expenses-db:3306/EXPENSES_DB 
+    username: user
+    password: user
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+# logging:
+#   level:
+#     org.springframework: DEBUG
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG # Logs SQL statements
+        type:
+          descriptor:
+            sql: 
+              BasicBinder: TRACE # Logs parameter bindings
+  

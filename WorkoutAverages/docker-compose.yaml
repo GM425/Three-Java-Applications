@@ -1,0 +1,97 @@
+# version: '3.8'
+services:
+  
+  # gateway-service:
+  #   container_name: gateway-service
+  #   build:
+  #     context: ./gatewayService
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     - login-service
+  #     - record-service
+  #   networks:
+  #     - backend
+  #   env_file:
+  #     - .env
+
+  record-service:
+    container_name: record-service
+    build:
+      context: ./recordService
+      dockerfile: Dockerfile
+    depends_on:
+      - record-db
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://record-db:3306/RECORD_DB
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: user
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
+    networks:
+      - workout-network
+
+  record-db:
+    container_name: record-db
+    build:
+      context: ./recordDB
+      dockerfile: Dockerfile
+    volumes:
+      - record_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+      MYSQL_DATABASE: RECORD_DB
+    networks:
+      - workout-network
+
+  user-service:
+    container_name: user-service
+    build:
+      context: ./userService
+      dockerfile: Dockerfile
+    depends_on:
+      - user-db
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://user-db:3307/USER_DB
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: user
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
+    networks:
+      - workout-network
+
+  user-db:
+    container_name: user-db
+    build:
+      context: ./userDB
+      dockerfile: Dockerfile
+    volumes:
+      - user_data:/var/lib/mysql
+    ports:
+      - 3307:3307
+    environment:
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+      MYSQL_DATABASE: USER_DB
+    networks:
+      - workout-network
+
+volumes:
+  user_data:
+  record_data:
+
+networks:
+  workout-network:
+    driver: bridge

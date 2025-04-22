@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  
+  expenses-service:
+    container_name: expenses-service
+    build:
+      context: ./ExpensesService
+      dockerfile: Dockerfile
+    depends_on:
+      - expenses-db
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://expenses-db:3306/EXPENSES_DB
+      # ?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      # SPRING_DATA_MYSQL_HOST: employee-db
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: user
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQL8Dialect
+    networks:
+      - expenses-network
+
+  expenses-db:
+    container_name: expenses-db
+    # image: mysql:8.0
+    build:
+      context: ./ExpensesDB
+      dockerfile: Dockerfile
+    volumes:
+      - expenses_data:/var/lib/mysql
+        # - type:bind
+        # - ./employeeDB/docker-entrypoint-initdb.d:
+        #environment values only need to be added if you want to override a default value or what is already defined in my app ex. application.properties file
+    ports:
+      - 3306:3306
+    environment:
+      # SPRING_DATASOURCE_URL: jdbc:mysql://expenses-db:3306/EXPENSES_DB
+      # SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      # SPRING_DATASOURCE_PASSWORD: user
+      # SPRING_DATASOURCE_USERNAME: user
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+      MYSQL_DATABASE: EXPENSES_DB
+    networks:
+      - expenses-network
+
+volumes:
+  expenses_data:
+
+networks:
+  expenses-network:
+    driver: bridge
